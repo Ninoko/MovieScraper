@@ -63,11 +63,10 @@ class ActorScraper(PersonScraper):
 
     def get_role(self, role_soup: BeautifulSoup) -> Dict[str, Any]:
         movie = role_soup.find('td', {'class', 'ft'}).find('a')
-        role = self._get_role_name(role_soup)
         return {
             'movie_title': movie.text,
             'movie_url': f'{self.website}{movie["href"].strip()}',
-            'role': role}
+            'role_name': self._get_role_name(role_soup)}
 
     def get_roles(self, actor_soup) -> List[Dict[str, Any]]:
         rows = actor_soup.find('tbody', attrs={'data-profession': 'actors'}).find_all('tr')
@@ -87,7 +86,7 @@ if __name__ == '__main__':
     actor_scraper = ActorScraper()
     desc = actor_scraper.actor_description("https://www.filmweb.pl/person/Johnny.Depp")
     for role in desc['roles']:
-        print(f'{desc["name"]} play in the {role["movie_title"]} as {role["role"]}')
+        print(f'{desc["name"]} play in the {role["movie_title"]} as {role["role_name"]}')
     print(desc.keys())
     print(desc['rating'])
     print(desc['birth_date'])
