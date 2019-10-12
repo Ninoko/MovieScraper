@@ -1,16 +1,21 @@
 import locale
+from functools import wraps
 from typing import Callable
 
 
-def safe_return(exception=Exception, default_return: object = None):
-    def wrapper(func: Callable):
-        def func_wrapper(*args, **kwargs):
+def safe_return(func: Callable = None, *, exception=Exception, default_return=None):
+    def func_wrapper(func: Callable):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
             try:
                 return func(*args, **kwargs)
             except exception:
                 return default_return
-        return func_wrapper
-    return wrapper
+        return wrapper
+    if func:
+        return func_wrapper(func)
+
+    return func_wrapper
 
 
 def set_locale():

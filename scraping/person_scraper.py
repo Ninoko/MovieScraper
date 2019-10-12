@@ -13,22 +13,22 @@ class PersonScraper(BaseScraper):
         super().__init__(*args, **kwargs)
         self.person_soup = None
 
-    @safe_return()
+    @safe_return
     def get_full_name(self, person_soup: BeautifulSoup) -> str:
         return person_soup.find('h1', {'class', 'personName'}).text
 
-    @safe_return()
+    @safe_return
     def get_image_url(self, person_soup: BeautifulSoup) -> str:
         return person_soup.find('img', {'itemprop': 'image'})['src']
 
-    @safe_return()
+    @safe_return
     def get_birth_date(self, person_soup: BeautifulSoup) -> datetime.date:
         return datetime.strptime(
             person_soup.find(
                 'span', {'itemprop': 'birthDate'}
             ).text.strip(), '%d %B %Y').date()
 
-    @safe_return()
+    @safe_return
     def get_death_date(self, person_soup: BeautifulSoup) -> datetime.date:
         return datetime.strptime(
             person_soup.find(
@@ -50,7 +50,7 @@ class ActorScraper(PersonScraper):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    @safe_return()
+    @safe_return
     def get_rating(self, actor_soup: BeautifulSoup) -> float:
         return float(
             actor_soup.find('div', {'data-prof': 'actors'})
