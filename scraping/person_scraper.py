@@ -38,7 +38,7 @@ class PersonScraper(BaseScraper):
     def get_image_url(self) -> str:
         return self.person_soup.find('img', {'itemprop': 'image'})['src']
 
-    # @safe_return
+    @safe_return
     def get_birth_date(self) -> datetime.date:
         return datetime.strptime(
             self.person_soup.find(
