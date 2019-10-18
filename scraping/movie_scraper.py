@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Dict, Any, List
+from typing import Dict, List
 
 from bs4 import BeautifulSoup
 
@@ -40,7 +39,7 @@ class MovieScraper(BaseScraper):
 
     @safe_return
     def poster_url(self) -> str:
-        return self.movie_soup.find('img', {'itemprop': 'image'})['src']\
+        return self.movie_soup.find('img', {'itemprop': 'image'})['src']
 
     @safe_return
     def plot(self) -> str:
@@ -52,20 +51,21 @@ class MovieScraper(BaseScraper):
             self.movie_soup.find('span', {'class': 'ratingRateValue'})
                            .text.replace(',', '.'))
 
-    def _role(self, row_soup: BeautifulSoup) -> Dict[str, str]:
+    def person_link(self, row_soup: BeautifulSoup) -> str:
         anchor = row_soup.find('a', {'rel': 'v:starring'})
-        return {
-            'person_name': anchor['title'],
-            'person_url': f'{self.website}{anchor["href"]}',
-            'role_name': row_soup.find('span', {'class': None}).text,
-        }
+        return f'{self.website}{anchor["href"].strip()}'
 
-    def roles(self) -> List[Dict[str, str]]:
+    def actor_links(self) -> List[str]:
         rows = self.actors_soup.find_all('tr', {'data-role': True})
-        return [self._role(row) for row in rows]
+        return list(set([self.person_link(row) for row in rows]))
+
+    def crew_links(self) -> List[str]:
+        rows = self.crew_soup.find_all('tr', {'data-role': True})
+        return list(set([self.person_link(row) for row in rows]))
 
 
 if __name__ == '__main__':
     set_locale()
     scraper = MovieScraper('https://www.filmweb.pl/Piraci.Z.Karaibow')
-    print(scraper.roles())
+    print(scraper.actor_links())
+    print(scraper.crew_links())
