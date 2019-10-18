@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import List
 
 from bs4 import BeautifulSoup
 
@@ -55,17 +55,14 @@ class MovieScraper(BaseScraper):
         anchor = row_soup.find('a', {'rel': 'v:starring'})
         return f'{self.website}{anchor["href"].strip()}'
 
-    def actor_links(self) -> List[str]:
-        rows = self.actors_soup.find_all('tr', {'data-role': True})
-        return list(set([self.person_link(row) for row in rows]))
-
-    def crew_links(self) -> List[str]:
-        rows = self.crew_soup.find_all('tr', {'data-role': True})
-        return list(set([self.person_link(row) for row in rows]))
+    def cast_links(self) -> List[str]:
+        actor_rows = self.actors_soup.find_all('tr', {'data-role': True})
+        crew_rows = self.crew_soup.find_all('tr', {'data-role': True})
+        return list(set([self.person_link(row) for row in actor_rows]
+                        + [self.person_link(row) for row in crew_rows]))
 
 
 if __name__ == '__main__':
     set_locale()
     scraper = MovieScraper('https://www.filmweb.pl/Piraci.Z.Karaibow')
-    print(scraper.actor_links())
-    print(scraper.crew_links())
+    print(scraper.cast_links())
