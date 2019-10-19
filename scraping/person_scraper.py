@@ -1,10 +1,11 @@
+from itertools import chain
 from datetime import datetime
 from typing import Dict, Any, List
 
 from bs4 import BeautifulSoup
 
 from scraping.base_scraper import BaseScraper
-from scraping.utils import safe_return, set_locale
+from utils import safe_return
 
 
 class PersonScraper(BaseScraper):
@@ -22,12 +23,13 @@ class PersonScraper(BaseScraper):
         return self._person_soup
 
     @property
+    @safe_return(exception=(AttributeError, TypeError), default_return=[])
     def professions(self) -> List[str]:
         if self._professions is None:
-            _professions = self.person_soup.find(
-                'div', {'class': 'communityRate'}
-            ).find_all('div', id=lambda _id: _id and _id.startswith('pr_'), recursive=False)
-            self._professions = [profession['data-prof'] for profession in _professions]
+            _professions = self.person_soup.find_all(
+                'thead', {'data-profession': True}
+            )
+            self._professions = [profession['data-profession'] for profession in _professions]
         return self._professions
 
     @safe_return
@@ -52,14 +54,6 @@ class PersonScraper(BaseScraper):
                 'span', {'itemprop': 'deathDate'}
             ).text.strip(), '%d %B %Y').date()
 
-    def person_description(self) -> Dict[str, Any]:
-        return {
-            'full_name': self.full_name(),
-            'birth_date': self.birth_date(),
-            'death_date': self.death_date(),
-            'image_url': self.image_url(),
-        }
-
     @safe_return
     def profession_rating(self, profession: str) -> float:
         return float(
@@ -74,25 +68,32 @@ class PersonScraper(BaseScraper):
     def _role(self, role_soup: BeautifulSoup) -> Dict[str, Any]:
         movie = role_soup.find('td', {'class', 'ft'}).find('a')
         return {
-            'movie_title': movie.text,
             'movie_url': f'{self.website}{movie["href"].strip()}',
             'role_name': self._role_name(role_soup)
         }
+
+    def split_roles(self, role: Dict[str, Any]) -> List[Dict[str, Any]]:
+        if role['role_name'] and '/' in role['role_name']:
+            roles = []
+            for role_name in role['role_name'].split('/'):
+                roles.append({
+                    'movie_url': role['movie_url'],
+                    'role_name': role_name.strip()
+                })
+            return roles
+        else:
+            return [role]
 
     def profession_roles(self, profession: str) -> List[Dict[str, Any]]:
         rows = self.person_soup.find(
             'tbody', {'data-profession': profession}
         ).find_all('tr')
-        return [self._role(row) for row in rows]
+        roles = [self.split_roles(self._role(row)) for row in rows]
+        return list(chain(*roles))
 
-    def profession_description(self, profession: str) -> Dict[str, Any]:
-        return {
-            'rating': self.profession_rating(profession),
-            'roles': self.profession_roles(profession),
-        }
-
-
-if __name__ == '__main__':
-    set_locale()
-    scraper = PersonScraper("https://www.filmweb.pl/person/Johnny.Depp")
-    print(scraper.profession_description('actors'))
+    def movies_involved_in(self) -> List[str]:
+        movies = []
+        for profession in self.professions:
+            _roles = self.profession_roles(profession)
+            movies.extend(role['movie_url'] for role in _roles)
+        return list(set(movies))

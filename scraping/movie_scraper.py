@@ -3,7 +3,7 @@ from typing import List
 from bs4 import BeautifulSoup
 
 from scraping.base_scraper import BaseScraper
-from scraping.utils import safe_return, set_locale
+from utils import safe_return
 
 
 class MovieScraper(BaseScraper):
@@ -35,7 +35,7 @@ class MovieScraper(BaseScraper):
 
     @safe_return
     def title(self) -> str:
-        return self.movie_soup.find('h1', {'class', 'filmTitle'}).text
+        return self.movie_soup.find('h1', {'class', 'filmTitle'}).text.strip()
 
     @safe_return
     def poster_url(self) -> str:
@@ -48,8 +48,9 @@ class MovieScraper(BaseScraper):
     @safe_return
     def rating(self) -> float:
         return float(
-            self.movie_soup.find('span', {'class': 'ratingRateValue'})
-                           .text.replace(',', '.'))
+            self.movie_soup.find('div', {'class': 'filmRateBox'})
+                           .find('span', {'itemprop': 'ratingValue'})
+                .text.strip().replace(',', '.'))
 
     def person_link(self, row_soup: BeautifulSoup) -> str:
         anchor = row_soup.find('a', {'rel': 'v:starring'})
@@ -60,9 +61,3 @@ class MovieScraper(BaseScraper):
         crew_rows = self.crew_soup.find_all('tr', {'data-role': True})
         return list(set([self.person_link(row) for row in actor_rows]
                         + [self.person_link(row) for row in crew_rows]))
-
-
-if __name__ == '__main__':
-    set_locale()
-    scraper = MovieScraper('https://www.filmweb.pl/Piraci.Z.Karaibow')
-    print(scraper.cast_links())

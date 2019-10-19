@@ -6,7 +6,7 @@ setup(
     author='Miłosz Michta',
     author_email='milosz.casper.michta@gmail.com',
     description='Python package for movie data scraping',
-    packages=find_packages(include=['scraping']),
+    packages=find_packages(include=['scraping', 'crawling', 'storing']),
     install_requires=(
         'bs4',
         'requests',
