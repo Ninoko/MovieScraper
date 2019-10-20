@@ -1,3 +1,4 @@
+import locale
 from itertools import chain
 from datetime import datetime
 from typing import Dict, Any, List
@@ -15,6 +16,8 @@ class PersonScraper(BaseScraper):
         self.person_url = person_url
         self._person_soup = None
         self._professions = None
+
+        locale.setlocale(locale.LC_TIME, 'pl_PL.UTF-8')
 
     @property
     def person_soup(self) -> BeautifulSoup:

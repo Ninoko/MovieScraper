@@ -1,4 +1,3 @@
-import locale
 from functools import wraps
 from typing import Callable
 
@@ -16,7 +15,3 @@ def safe_return(func: Callable = None, *, exception=Exception, default_return=No
         return func_wrapper(func)
 
     return func_wrapper
-
-
-def set_locale():
-    locale.setlocale(locale.LC_TIME, 'pl_PL.UTF-8')

@@ -7,7 +7,6 @@ from store.base_storer import BaseStorer
 from store.csv_storer import CsvStorer
 from store.storage_manager import (MovieStorageManager, PersonStorageManager, ProfessionStorageManager,
                                    RoleStorageManager)
-from crawl.utils import set_locale
 
 
 class BfsCrawler:
@@ -138,6 +137,5 @@ class BfsCrawler:
 
 
 if __name__ == '__main__':
-    set_locale()
     crawler = BfsCrawler(storage_dir='../data')
     crawler.crawl(movie_url='https://www.filmweb.pl/Piraci.Z.Karaibow')
