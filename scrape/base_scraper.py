@@ -4,7 +4,7 @@ from requests.adapters import HTTPAdapter
 from abc import ABC
 from bs4 import BeautifulSoup
 
-from utils import safe_return
+from crawl.utils import safe_return
 
 
 class BaseScraper(ABC):

@@ -3,9 +3,9 @@ import os
 from typing import Type, List
 from abc import ABC, abstractmethod
 
-from storing.base_storer import BaseStorer
-from scraping.movie_scraper import MovieScraper
-from scraping.person_scraper import PersonScraper
+from store.base_storer import BaseStorer
+from scrape.movie_scraper import MovieScraper
+from scrape.person_scraper import PersonScraper
 
 
 class StorageManager(ABC):

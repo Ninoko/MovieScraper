@@ -1,15 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='scraping',
+    name='movie-scraper',
     version='1.0.0',
     author='Miłosz Michta',
     author_email='milosz.casper.michta@gmail.com',
-    description='Python package for movie data scraping',
-    packages=find_packages(include=['scraping', 'crawling', 'storing']),
+    packages=find_packages(),
     install_requires=(
         'bs4',
         'requests',
-        'locale',
     ),
 )

@@ -3,7 +3,7 @@ import csv
 
 from typing import List
 
-from storing.base_storer import BaseStorer
+from store.base_storer import BaseStorer
 
 
 class CsvStorer(BaseStorer):

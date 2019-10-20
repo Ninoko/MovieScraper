@@ -2,8 +2,8 @@ from typing import List
 
 from bs4 import BeautifulSoup
 
-from scraping.base_scraper import BaseScraper
-from utils import safe_return
+from scrape.base_scraper import BaseScraper
+from crawl.utils import safe_return
 
 
 class MovieScraper(BaseScraper):
@@ -57,7 +57,11 @@ class MovieScraper(BaseScraper):
         return f'{self.website}{anchor["href"].strip()}'
 
     def cast_links(self) -> List[str]:
-        actor_rows = self.actors_soup.find_all('tr', {'data-role': True})
-        crew_rows = self.crew_soup.find_all('tr', {'data-role': True})
+        try:
+            actor_rows = self.actors_soup.find_all('tr', {'data-role': True})
+            crew_rows = self.crew_soup.find_all('tr', {'data-role': True})
+        except AttributeError:
+            actor_rows = self.movie_soup.find_all('tr', {'class': 'cast'})
+            crew_rows = self.movie_soup.find_all('tr', {'class': 'creator'})
         return list(set([self.person_link(row) for row in actor_rows]
                         + [self.person_link(row) for row in crew_rows]))

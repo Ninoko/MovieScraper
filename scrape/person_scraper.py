@@ -4,8 +4,8 @@ from typing import Dict, Any, List
 
 from bs4 import BeautifulSoup
 
-from scraping.base_scraper import BaseScraper
-from utils import safe_return
+from scrape.base_scraper import BaseScraper
+from crawl.utils import safe_return
 
 
 class PersonScraper(BaseScraper):
