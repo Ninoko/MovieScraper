@@ -18,7 +18,7 @@ The output of this project can be used for:
 - BeautifulSoup4
 - requests
 - locale
-- csv package
+- csv
 - Breadth-first search algorithm
 
 ### What I have learned
