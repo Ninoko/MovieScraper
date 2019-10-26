@@ -1,11 +1,14 @@
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 setup(
     name='movie-scraper',
     version='1.0.0',
     author='Miłosz Michta',
     author_email='milosz.casper.michta@gmail.com',
-    packages=find_packages(),
+    packages=find_namespace_packages(where='./src'),
+    package_dir={
+        '': 'src',
+    },
     install_requires=(
         'bs4',
         'requests',
