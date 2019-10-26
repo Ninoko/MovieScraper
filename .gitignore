@@ -3,5 +3,5 @@ dist
 *.egg-info
 .idea
 __pycache__
-.mypy
+.mypy*
 cache/
