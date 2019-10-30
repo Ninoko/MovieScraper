@@ -51,7 +51,7 @@ class MovieScraper(BaseScraper):
         anchor = row_soup.find('a', {'rel': 'v:starring'})
         return f'{self.website}{anchor["href"].strip()}'
 
-    @safe_return(exception=AttributeError)
+    @safe_return(exception=AttributeError, default_return=[])
     def cast_links(self) -> List[str]:
         try:
             actor_rows = self.actors_soup.find('form', {'class', 'filmCastWrapper'})\
