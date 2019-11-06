@@ -6,6 +6,7 @@ from scrape.person_scraper import PersonScraper
 from store.base_storer import BaseStorer
 from store.csv_storer import CsvStorer
 from utils.progress_logger import ProgressLogger
+from utils.utils import cache_object
 from store.storage_manager import (MovieStorageManager, PersonStorageManager, ProfessionStorageManager,
                                    RoleStorageManager)
 
@@ -61,12 +62,14 @@ class BfsCrawler:
         self.profession_set.update({profession: self._profession_id})
         self._profession_id += 1
 
+    @cache_object
     def add_movie(self, movie_url: str):
         self.movie_set.update({movie_url: self._movie_id})
         self.movie_deque.append((movie_url, self._movie_id))
         self.movie_logger.update(self._movie_id, self.num_movie_finished)
         self._movie_id += 1
 
+    @cache_object
     def add_person(self, person_url: str):
         self.person_set.update({person_url: self._person_id})
         self.person_deque.append((person_url, self._person_id))
@@ -138,9 +141,10 @@ class BfsCrawler:
     def is_new(self, node_url: str):
         return node_url not in self.sets[self.turn - 1]
 
-    def crawl(self, movie_url: str):
-        self.turn = 1
-        self.add_movie(movie_url)
+    def crawl(self, movie_url: str = None):
+        if movie_url is not None:
+            self.turn = 1
+            self.add_movie(movie_url)
         while not self.is_empty:
             if self.deques[self.turn]:
                 url, node_id = self.deques[self.turn].popleft()
