@@ -1,3 +1,4 @@
+import os
 import dill
 from functools import wraps
 from typing import Callable
@@ -27,8 +28,10 @@ def safe_return(func: Callable = None, *, exception=IGNORED_EXCEPTIONS, default_
 def cache_object(func: Callable):
     def wrapper(*args, **kwargs):
         obj = args[0]
-        file_name = f'/tmp/{obj.__class__.__name__}'
+        file_path = f'/tmp/{obj.__class__.__name__}'
         result = func(*args, **kwargs)
-        dill.dump(obj, open(file_name, 'wb'))
+        dill.dump(obj, open(file_path, 'wb'))
+        while not os.path.exists(file_path):
+            time.sleep(1)
         return result
     return wrapper
