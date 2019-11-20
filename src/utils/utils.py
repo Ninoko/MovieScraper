@@ -31,7 +31,5 @@ def cache_object(func: Callable):
         file_path = f'/tmp/{obj.__class__.__name__}'
         result = func(*args, **kwargs)
         dill.dump(obj, open(file_path, 'wb'))
-        while not os.path.exists(file_path):
-            time.sleep(1)
         return result
     return wrapper
